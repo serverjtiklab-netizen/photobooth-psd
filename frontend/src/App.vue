@@ -66,9 +66,17 @@ const takePhoto = async () => {
   offCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
   const ctx = canvas.getContext('2d');
+  
+  // Flip horizontally to match the mirrored video preview
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  
   ctx.filter = activeFilter.value !== 'none' ? activeFilter.value : 'none';
   // Draw from offscreen canvas to apply the filter reliably
   ctx.drawImage(offscreenCanvas, 0, 0, canvas.width, canvas.height);
+  
+  // Reset transform
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   
   canvas.toBlob(async (blob) => {
     const formData = new FormData();

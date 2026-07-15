@@ -4,8 +4,6 @@ services:
   app:
     build: .
     container_name: photobooth-web
-    ports:
-      - "3330:3000"
     environment:
       - DB_HOST=db
       - DB_USER=root
@@ -26,8 +24,6 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=photobooth_db
-    ports:
-      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql

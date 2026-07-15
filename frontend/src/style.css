@@ -99,43 +99,84 @@ body, html {
   gap: 1.5rem;
 }
 
-.filters-scroller {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.filters-scroller::-webkit-scrollbar {
-  display: none;
-}
-
-.filters-scroller button {
-  flex: 0 0 auto;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: #fff;
-  padding: 0.6rem 1.2rem;
-  border-radius: 99px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-  transition: all 0.2s ease;
-}
-
-.filters-scroller button.active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border-color: transparent;
-}
-
 .action-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
+  position: relative;
+}
+
+.filter-bubble {
+  position: absolute;
+  top: calc(100% + 1rem);
+  right: 1rem;
+  background: var(--glass);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  z-index: 100;
+  min-width: 140px;
+}
+
+.filter-bubble button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.filter-bubble button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.filter-bubble button.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-color: transparent;
+}
+
+.filter-toggle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  z-index: 101;
+}
+
+.filter-toggle-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-color: transparent;
+}
+
+.filter-toggle-btn:hover {
+  transform: scale(1.05);
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .gallery-preview {
@@ -164,9 +205,7 @@ body, html {
   cursor: default;
 }
 
-.spacer {
-  width: 50px;
-}
+
 
 .snap-btn {
   width: 80px;

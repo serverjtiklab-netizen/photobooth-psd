@@ -7,6 +7,7 @@ const canvasRef = ref(null);
 const photos = ref([]);
 const activeFilter = ref('none');
 const showGallery = ref(false);
+const showFilters = ref(false);
 
 const { stream, start, enabled } = useUserMedia({
   constraints: {
@@ -57,9 +58,17 @@ const takePhoto = async () => {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   
+  // Draw video to an offscreen canvas first to avoid browser bugs with video + filter
+  const offscreenCanvas = document.createElement('canvas');
+  offscreenCanvas.width = canvas.width;
+  offscreenCanvas.height = canvas.height;
+  const offCtx = offscreenCanvas.getContext('2d');
+  offCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
   const ctx = canvas.getContext('2d');
   ctx.filter = activeFilter.value !== 'none' ? activeFilter.value : 'none';
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  // Draw from offscreen canvas to apply the filter reliably
+  ctx.drawImage(offscreenCanvas, 0, 0, canvas.width, canvas.height);
   
   canvas.toBlob(async (blob) => {
     const formData = new FormData();
@@ -93,22 +102,23 @@ const takePhoto = async () => {
     <div class="overlay-ui">
       <!-- Top Controls -->
       <div class="controls-container">
-        <!-- Filters (Scrollable horizontally) -->
-        <div class="filters-scroller">
-          <button 
-            v-for="f in filters" 
-            :key="f.value"
-            :class="{ active: activeFilter === f.value }"
-            @click="activeFilter = f.value"
-          >
-            {{ f.name }}
-          </button>
-        </div>
-        
         <!-- Action Row -->
         <div class="action-row">
+          <!-- Filter Bubble -->
+          <transition name="fade">
+            <div class="filter-bubble" v-if="showFilters">
+              <button 
+                v-for="f in filters" 
+                :key="f.value"
+                :class="{ active: activeFilter === f.value }"
+                @click="activeFilter = f.value; showFilters = false"
+              >
+                {{ f.name }}
+              </button>
+            </div>
+          </transition>
           <div class="gallery-preview" @click="showGallery = true" v-if="photos.length > 0">
-            <img :src="photos[0].filepath" alt="Latest snap" :style="{ filter: photos[0].filter_used }" />
+            <img :src="photos[0].filepath" alt="Latest snap" />
           </div>
           <div class="gallery-preview placeholder" v-else></div>
 
@@ -116,7 +126,11 @@ const takePhoto = async () => {
             <div class="inner-circle"></div>
           </button>
           
-          <div class="spacer"></div>
+          <button class="filter-toggle-btn" :class="{ active: showFilters }" @click="showFilters = !showFilters">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -134,7 +148,7 @@ const takePhoto = async () => {
       </div>
       <div class="gallery-grid">
         <div v-for="photo in photos" :key="photo.id" class="photo-card">
-          <img :src="photo.filepath" :alt="photo.filename" :style="{ filter: photo.filter_used }" />
+          <img :src="photo.filepath" :alt="photo.filename" />
         </div>
       </div>
     </div>

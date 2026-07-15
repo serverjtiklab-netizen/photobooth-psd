@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS photobooth_db;
+USE photobooth_db;
+
+CREATE TABLE IF NOT EXISTS photos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    filepath VARCHAR(512) NOT NULL,
+    filter_used VARCHAR(50) DEFAULT 'none',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
